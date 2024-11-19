@@ -44,25 +44,56 @@ public class ChatServerTest {
 
     @Test
     void registerUser() {
+        server.registerUser(alice);
+        assertNotNull(server.getUser("Alice"), "Alice should be registered in the server.");
     }
 
     @Test
     void unregisterUser() {
+        server.registerUser(alice);
+        server.unregisterUser("Alice");
+        assertNull(server.getUser("Alice"), "Alice should be removed from the server.");
     }
 
     @Test
     void sendMessage() {
+        server.registerUser(alice);
+        server.registerUser(bob);
+        alice.sendMessage(java.util.Arrays.asList("Bob"), "Hello Bob!");
+        // Assuming Bob’s receiveMessage method adds received messages to a testable structure.
+        assertTrue(bob.getHistory().getMessages().contains("Hello Bob!"), "Bob should receive the message from Alice.");
     }
 
     @Test
     void retractMessage() {
+        server.registerUser(alice);
+        server.registerUser(bob);
+        Message msg = new Message("Alice", java.util.Arrays.asList("Bob"), "Hello Bob!");
+        alice.sendMessage(java.util.Arrays.asList("Bob"), "Hello Bob!");
+        server.retractMessage(alice, msg);
+        // Assuming you have a way to check that Bob's message was retracted, such as a flag or message removal
+        assertFalse(bob.getHistory().getMessages().contains("Hello Bob!"), "The message should be retracted from Bob’s history.");
     }
 
     @Test
     void blockUser() {
+        server.registerUser(alice);
+        server.registerUser(bob);
+        server.blockUser("Bob");
+        assertTrue(server.isBlocked("Bob"), "Bob should be blocked.");
+        alice.sendMessage(java.util.Arrays.asList("Bob"), "Hello Bob!");
+
+        assertFalse(bob.getHistory().getMessages().contains("Hello Bob!"), "Blocked Bob should not receive messages.");
     }
 
     @Test
     void unblockUser() {
+        server.registerUser(alice);
+        server.registerUser(bob);
+        server.blockUser("Bob");
+        server.unblockUser("Bob");
+        assertFalse(server.isBlocked("Bob"), "Bob should be unblocked.");
+        alice.sendMessage(java.util.Arrays.asList("Bob"), "Hello again, Bob!");
+        assertTrue(bob.getHistory().getMessages().contains("Hello again, Bob!"), "Unblocked Bob should now receive messages.");
     }
 }

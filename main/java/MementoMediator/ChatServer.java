@@ -16,7 +16,7 @@ public class ChatServer {
     public void sendMessage(String sender, List<String> recipients, String content) {
         Message message = new Message(sender, recipients, content);
         for (String recipient : recipients) {
-            if (!blockedUsers.contains(recipient) && users.containsKey(recipient)) {
+            if (!isBlocked(recipient) && users.containsKey(recipient)) {
                 users.get(recipient).receiveMessage(message);
             }
         }
@@ -42,7 +42,21 @@ public class ChatServer {
     public void unblockUser(String username) {
         blockedUsers.remove(username);
     }
+
+    public void retractMessage(User sender, Message message) {
+        for (String recipient : message.getRecipients()) {
+            if (users.containsKey(recipient)) {
+                users.get(recipient).retractReceivedMessage(message);
+            }
+        }
+        System.out.println("Message retracted by " + sender.getName() + ": " + message.getContent());
+    }
+    // Check if a user is currently blocked from receiving messages
+    public boolean isBlocked(String username) {
+        return blockedUsers.contains(username);
+    }
 }
+
 
 
 

@@ -12,18 +12,15 @@ public class ChatApplication {
         server.registerUser(alice);
         server.registerUser(bob);
 
-
         alice.sendMessage(Arrays.asList("Bob"), "Hello Bob!");
         alice.sendMessage(Arrays.asList("Bob"), "How are you today?");
+        bob.sendMessage(Arrays.asList("Alice"), "Hi Alice, nice to hear from you!");
 
-        Iterator<Message> messagesFromAlice = bob.iterator(alice);
-        while (messagesFromAlice.hasNext()) {
-            Message msg = messagesFromAlice.next();
-            System.out.println("Bob received from Alice: " + msg.getContent());
+        // Iterate messages that Alice has received from Bob
+        Iterator<Message> messagesFromBob = alice.iterator(bob);
+        while (messagesFromBob.hasNext()) {
+            Message msg = messagesFromBob.next();
+            System.out.println("Alice received from Bob: " + msg.getContent());
         }
     }
 }
-
-
-
-
